@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/category")
@@ -22,12 +23,16 @@ public class CategoryController {
 
     @GetMapping("/getAll")
     public ResponseEntity<List<Category>> getAllCategory(){
-        System.out.println("helloer");
         return categoryServices.getAllCategory();
     }
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/addCategory")
     public ResponseEntity<Category> addCategory(@RequestBody Category category){
         return categoryServices.addCategory(category);
+    }
+
+    @GetMapping("/getProductByCategoryId/{categoryId}")
+    public ResponseEntity<List<Map<String, Object>>> getProductByCategoryId(@PathVariable Long categoryId){
+        return categoryServices.findByCategoryId(categoryId);
     }
 }

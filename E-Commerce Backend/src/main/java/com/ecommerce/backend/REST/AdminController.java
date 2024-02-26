@@ -1,5 +1,6 @@
 package com.ecommerce.backend.REST;
 
+import com.ecommerce.backend.entities.Admin;
 import com.ecommerce.backend.entities.Customer;
 import com.ecommerce.backend.services.AdminService;
 import com.ecommerce.backend.entities.Product;
@@ -8,9 +9,7 @@ import com.ecommerce.backend.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -46,8 +45,20 @@ public class AdminController {
         return adminService.getAllProduct();
     }
 
-//    @DeleteMapping("/deleteUser/{id}")
-//    public ResponseEntity<String> deleteUser(@PathVariable Long id){
-//        return adminService.deleteUser(id);
-//    }
+    @PostMapping("/addAdmin")
+    public ResponseEntity<Admin> addAdmin(@RequestBody Admin admin){
+        return adminService.addAdmin(admin);
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/myProfile")
+    public ResponseEntity<Admin> myProfile(@RequestHeader(value = "Authorization") String authorizationHeader){
+        return adminService.myProfile(authorizationHeader);
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PatchMapping("/updateProfile")
+    public ResponseEntity<Admin> updateProfile(@RequestBody Admin updateAdmin,@RequestHeader(value = "Authorization") String authorizationHeader){
+        return adminService.updateProfile(authorizationHeader,updateAdmin);
+    }
 }

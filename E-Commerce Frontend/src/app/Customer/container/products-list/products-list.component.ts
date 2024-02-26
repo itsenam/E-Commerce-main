@@ -1,6 +1,6 @@
 import { Component, Input, Output } from '@angular/core';
-import { Product } from 'src/app/Models/Product';
 import { ProductVariation } from 'src/app/Models/ProductVariation';
+import { CategoryService } from 'src/app/Services/category.service';
 import { ProductServiceService } from 'src/app/Services/product-service.service';
 
 @Component({
@@ -11,19 +11,25 @@ import { ProductServiceService } from 'src/app/Services/product-service.service'
 export class ProductsListComponent {
 
   products!: any;
+  categories: any;
 
-  constructor(private productService:ProductServiceService){}
+  // For Showing in Product Details
+  selectedProduct!: ProductVariation;
+  showProductDetails:boolean = false;
+
+  @Input() 
+  searched:string ='';
+
+  constructor(private productService:ProductServiceService,private categoryService:CategoryService){}
 
   ngOnInit(): void {
     this.getApprovedProducts();
-    
   }
 
   getApprovedProducts() {
     this.productService.getApprovedProducts().subscribe(
       (data) => {
         this.products = data;
-        console.log(this.products);
       },
       (error) => {
         console.error('Error fetching data:', error);
@@ -31,24 +37,18 @@ export class ProductsListComponent {
     );
   }
 
-  // For Showing in Product Details
-  selectedProduct!: ProductVariation;
-  showProductDetails:boolean = false;
-
- @Input() 
-  searched:string ='';
-  
-  // For Sending Data to Filter Component 
-  // total = this.products.length;
-  // inStock = this.products.filter(x => x.is_in_inventory === true).length;
-  // notInStock = this.products.filter(x => x.is_in_inventory === false).length;
-
-  selectedRadioButton: string = 'all';
-
-  // For Radio Buttons
-  onFilterChanged(event: string){
-    console.log(event);
-    this.selectedRadioButton = event;
+  onCategoryFilter(categoryId:number){
+    if(categoryId === 0){
+      this.getApprovedProducts();
+    }else{
+      this.categoryService.getByCategoryId(categoryId).subscribe(
+        (data) =>{
+          this.products = data;
+        },(error) =>{
+          console.error("ERROR", error);
+        }
+      )
+    }
   }
 
 }

@@ -1,4 +1,5 @@
 import { Component, Input,EventEmitter, Output } from '@angular/core';
+import { CategoryService } from 'src/app/Services/category.service';
 
 @Component({
   selector: 'app-filter',
@@ -6,19 +7,28 @@ import { Component, Input,EventEmitter, Output } from '@angular/core';
   styleUrls: ['./filter.component.css']
 })
 export class FilterComponent {
-  // Recieved From ProductList Component
-  @Input() all:number = 0;
-  @Input() inStock:number = 0;
-  @Input() notInStock:number = 0;
 
-  // Send message from Filter if select any radio button
-  @Output() SelectedFilterRadioButton: EventEmitter<string> = new EventEmitter<string>();
+  categories:any;
 
-  selectedRadioButton: string = 'all'
+  @Output() filterNotify: EventEmitter<number> = new EventEmitter();
 
-  // Filter radio Button
-  onSelectedFilterRadioButton(){
-    // console.log(this.selectedRadioButton);
-    this.SelectedFilterRadioButton.emit(this.selectedRadioButton);
+  constructor(private categoryService:CategoryService){}
+
+  ngOnInit(){
+    this.getCategories();
+  }
+
+  getCategories(){
+    this.categoryService.getAllCategory().subscribe(
+      (data) =>{
+        this.categories = data;        
+      }, (error) =>{
+        console.error("Error", error);
+      }
+    )
+  }
+
+  filter(categoryId:number){
+    this.filterNotify.emit(categoryId);
   }
 }

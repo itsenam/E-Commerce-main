@@ -1,7 +1,7 @@
 package com.ecommerce.backend.services;
 
-import com.ecommerce.backend.entities.Category;
 import com.ecommerce.backend.dao.CategoryRepository;
+import com.ecommerce.backend.entities.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,17 +9,19 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Component
 public class CategoryServices {
     @Autowired
     private CategoryRepository categoryRepository;
+    @Autowired
+    private ProductService productService;
 
     public ResponseEntity<List<Category>> getAllCategory(){
         try{
             List<Category> categories = (List<Category>) categoryRepository.findAll();
-            System.out.println(categories);
             if(categories.size() <= 0){
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
@@ -38,5 +40,9 @@ public class CategoryServices {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    public ResponseEntity<List<Map<String, Object>>> findByCategoryId(Long categoryId){
+        return productService.findByCategories(categoryId);
     }
 }
